@@ -9,15 +9,14 @@
 ######################################################
 version=1.1.2
 
-if [[ ("$UID" != 0) && ("$1" != "ip") && ("$1" != "-ip") && \
-      ("$1" != "--ip") && ! (-z "$1") && ("$1" != "-h") && \
-      ("$1" != "--status") && ("$1" != "-status") && ("$1" != "status") && \
-      ("$1" != "--help") && ("$1" != "--h") && ("$1" != "-help") && \
-      ("$1" != "help") && ("$1" != "--version") && ("$1" != "-version") && \
-      ("$1" != "-v") && ("$1" != "--v")]]; then
-  echo "[!] Error: The program requires root access."
-  exit 1
-fi
+no_root_ops="ip z h status help version v"
+
+for option in $no_root_ops; do
+	if [[ ("$UID" != 0) && ("$1" =~ ^("$option"|"-$option"|"--$option")$ )]]; then
+		echo "[!] Error: The program requires root access."
+		exit 1
+	fi
+done
 
 function check_requirements() {
   if [[ -z $(which openvpn) ]]; then
